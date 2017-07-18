@@ -45,10 +45,29 @@ let requestHandler = function(request, response) {
     statusCode = 200;
     response.end(JSON.stringify(storage));
   } else if (request.method === 'POST') {
-    console.log(request.method);
-    console.log(request.json, 'this is the json of the request');
+
+    const cacheResult = () => {
+
+    };  
+
+    if (request._postData) {
+      request.on('data', function(data) {
+        storage.results.push(JSON.parse(data));
+      });
+    } else {
+      request.on('end', function() {
+        console.log('end of data');
+      });
+    }
+
+    //the inputs to the callback is JSON string of the client input
+    //then store
+    
+    //if end render a message
     statusCode = 201;
-    storage.results.push(request.json);
+
+    
+
     console.log(storage);
   }
   // Request and Response come from node's http module.
