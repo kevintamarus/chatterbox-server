@@ -1,7 +1,7 @@
 // YOUR CODE HERE:
 let app = {};
 
-app.server = 'http://parse.la.hackreactor.com/chatterbox/classes/messages';
+app.server = 'http://127.0.0.1:3000';
 let lastID;
 let tempID;
 
