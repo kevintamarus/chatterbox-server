@@ -15,22 +15,7 @@ this file and include it in basic-server.js so that it actually works.
 const storage = {};
 storage.results = [];
 
-/*
-request : client wants information send a get request
-  so we need to decipher the type of request
-  if they run a get
-    we are spitting back all results?
-      in a JSON stringed object
-
-   else if the request is a post?
-    we are storing results
-  
-*/
-
 let requestHandler = function(request, response) {
-  // console.log(request.method, 'the type of request');
-  // console.log(request.url, 'the url')
-  // console.log(typeof request);
 
   let defaultCorsHeaders = {
     'access-control-allow-origin': '*',
@@ -38,37 +23,27 @@ let requestHandler = function(request, response) {
     'access-control-allow-headers': 'content-type, accept',
     'access-control-max-age': 10 // Seconds.
   };
-  
-  let statusCode;
-  
+
   if (request.method === 'GET') {
-    statusCode = 200;
-    response.end(JSON.stringify(storage));
-  } else if (request.method === 'POST') {
-
-    const cacheResult = () => {
-
-    };  
-
-    if (request._postData) {
-      request.on('data', function(data) {
-        storage.results.push(JSON.parse(data));
-      });
+    if (!request.url.includes('/classes/messages') && 
+        !request.url.includes('/classes/room')) {
+      statusCode = 404;
+      response.writeHead(404, 'unknown URL');
+      response.end(); // refactor
     } else {
-      request.on('end', function() {
-        console.log('end of data');
-      });
+      statusCode = 200;
+      response.writeHead(200, 'Data Received');
+      response.end(JSON.stringify(storage));
     }
 
-    //the inputs to the callback is JSON string of the client input
-    //then store
-    
-    //if end render a message
-    statusCode = 201;
+  } else if (request.method === 'POST') {
 
-    
+    request.on('data', function(data) {
+      storage.results.push(JSON.parse(data));
+    });
+    response.writeHead(201, 'received POST message');   
+    response.end();
 
-    console.log(storage);
   }
   // Request and Response come from node's http module.
   //
@@ -86,9 +61,7 @@ let requestHandler = function(request, response) {
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
-  // The outgoing status.
-  
-
+ 
   // See the note below about CORS headers.
   let headers = defaultCorsHeaders;
 
@@ -100,7 +73,7 @@ let requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+  
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
