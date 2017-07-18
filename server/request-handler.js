@@ -27,23 +27,29 @@ request : client wants information send a get request
   
 */
 
-var requestHandler = function(request, response) {
+let requestHandler = function(request, response) {
   // console.log(request.method, 'the type of request');
   // console.log(request.url, 'the url')
   // console.log(typeof request);
 
-  var defaultCorsHeaders = {
+  let defaultCorsHeaders = {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'access-control-allow-headers': 'content-type, accept',
     'access-control-max-age': 10 // Seconds.
   };
   
-
-  if(request.method === 'GET') {
+  let statusCode;
+  
+  if (request.method === 'GET') {
+    statusCode = 200;
     response.end(JSON.stringify(storage));
   } else if (request.method === 'POST') {
-    storage.results.push(JSON.stringify());
+    console.log(request.method);
+    console.log(request.json, 'this is the json of the request');
+    statusCode = 201;
+    storage.results.push(request.json);
+    console.log(storage);
   }
   // Request and Response come from node's http module.
   //
@@ -62,10 +68,10 @@ var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
-  var statusCode = 200;
+  
 
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+  let headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
   //
